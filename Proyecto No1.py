@@ -5,7 +5,7 @@ class Usuario:
         self.id = id
 
 class Estudiante (Usuario):
-    def __init__(self, nombre, correro, id):
+    def __init__(self, nombre, correo, id):
         super().__init__(nombre, correo, id)
 
 class Instructor(Usuario):
@@ -13,8 +13,13 @@ class Instructor(Usuario):
         super().__init__(nombre, correo, id)
         self.cursos_nuevos = []
 
-    def crear_curso(selfself, nombre, codigo):
-        pass
+    def crear_curso(self, nombre, cod):
+        nombre = input("Ingresar el nombre del curso: ")
+        cod = input("Ingresar el código del curso: ")
+        curso = Curso(nombre, cod, self)
+        self.cursos_nuevos.append(curso)
+        print(f"El curso -{nombre}- ha sido creado")
+        return curso
 
     def crear_evaluacion(self, curso, titulo, tipo, punteo):
         pass
