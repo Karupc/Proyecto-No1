@@ -14,15 +14,21 @@ class Instructor(Usuario):
         self.cursos_nuevos = []
 
     def crear_curso(self, nombre, cod):
-        nombre = input("Ingresar el nombre del curso: ")
-        cod = input("Ingresar el código del curso: ")
+        nombre = input("Ingrese el nombre del curso: ")
+        cod = input("Ingrese el código del curso: ")
         curso = Curso(nombre, cod, self)
         self.cursos_nuevos.append(curso)
         print(f"El curso -{nombre}- ha sido creado")
         return curso
 
     def crear_evaluacion(self, curso, titulo, tipo, punteo):
-        pass
+        titulo = input("Ingresar el título de la evaluación: ")
+        tipo = input("Ingrese que tipo de evaluación es (tarea o examen): ")
+        punteo = input("Ingrese la ponderación: ")
+        evaluacion = Evaluacion(titulo, tipo, punteo, curso)
+        curso.evaluaciones.append(evaluacion)
+        print(f"Se ha creado la evaluacion -{titulo}- en el curso -{curso.nombre}-")
+        return evaluacion
 
 class Curso:
     def __init__(self, nombre, cod, instructor):
