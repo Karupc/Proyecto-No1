@@ -13,13 +13,22 @@ class Instructor(Usuario):
         super().__init__(nombre, correo, id)
         self.cursos_nuevos = []
 
+    def crear_curso(selfself, nombre, codigo):
+        pass
+
+    def crear_evaluacion(self, curso, titulo, tipo, punteo):
+        pass
+
 class Curso:
     def __init__(self, nombre, cod, instructor):
         self.nombre = nombre
         self.cod = cod
         self.instructor = instructor
         self.estudiantes = []
-        seld.evaluaciones = []
+        self.evaluaciones = []
+
+    def incribir_estudiante(self, estudiante):
+        pass
 
 class Evaluacion:
     def __init__(self, titulo, tipo, punteo, curso):
