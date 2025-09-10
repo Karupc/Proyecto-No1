@@ -1,8 +1,15 @@
 class Usuario:
     def __init__(self, nombre, correo, id):
         self.nombre = nombre
-        self.correo = correo
+        self._correo = correo
         self.id = id
+
+    @property
+    def correo(self):
+        return self._correo
+    @correo.setter
+    def correo(self, nuevo_correo):
+        self._correo = nuevo_correo
 
 class Estudiante (Usuario):
     def __init__(self, nombre, correo, id):
