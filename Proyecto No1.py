@@ -38,8 +38,13 @@ class Curso:
         self.estudiantes = []
         self.evaluaciones = []
 
-    def incribir_estudiante(self, estudiante):
-        pass
+    def incribir_estudiante(self):
+        nombre = input("Ingresar el nombre del o la estudiante: ")
+        correo = input("Ingresar el correo del o la estudiante: ")
+        id = input("Ingresar el ID del o la estudiante")
+        estudiante = Estudiante(nombre, correo, id)
+        print(f"{nombre} ha sido inscrit@ al curso {self.nombre}")
+        return estudiante
 
 class Evaluacion:
     def __init__(self, titulo, tipo, punteo, curso):
