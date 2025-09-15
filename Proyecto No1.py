@@ -16,11 +16,13 @@ class Estudiante (Usuario):
     def __init__(self, nombre, correo, id, *args, **kwargs):
         super().__init__(nombre, correo, id, *args, **kwargs)
         self.calificaciones = {}
+        self.tipo = "estudiante"
 
 class Instructor(Usuario):
     def __init__(self, nombre, correo, id, *args, **kwargs):
         super().__init__(nombre, correo, id, *args, **kwargs)
         self.cursos_nuevos = []
+        self.tipo = "instructor"
 
     def crear_curso(self, nombre, cod):
         try:
@@ -161,9 +163,43 @@ while True:
 
         match opcion:
             case 1:
-                print("Hola")
+                tipo = input("¿Registrar Estudiante (E) o Instructor (I)? ").strip().lower()
+                nombre = input("Nombre: ").strip()
+                correo = input("Correo: ").strip()
+                id = input("ID: ").strip()
+
+                if tipo == "e":
+                    usuarios.append(Estudiante(nombre, correo, id))
+                    print(f"Estudiante '{nombre}' registrado")
+                elif tipo == "i":
+                    usuarios.append(Instructor(nombre, correo, id))
+                    print(f"Instructor '{nombre}' registrado")
+                else:
+                    print("Tipo inválido")
+
             case 2:
-                print("Hola")
+                if not usuarios:
+                    print("No hay usuarios registrados")
+                    continue
+
+                print("\nInstructores registrados:")
+                instructores = []
+                contador = 1
+                for usuario in usuarios:
+                    if usuario.tipo == "instructor":
+                        print(f"{contador}. {usuario.nombre}")
+                        instructores.append(usuario)
+                        contador += 1
+
+                if not instructores:
+                    print("No hay instructores para crear cursos")
+                    continue
+
+                seleccion = int(input("Seleccione un instructor por número: ")) - 1
+                if 0 <= seleccion < len(instructores):
+                    instructores[seleccion].crear_curso()
+                else:
+                    print("Opción inválida")
             case 3:
                 print("Hola")
             case 4:
