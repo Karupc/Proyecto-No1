@@ -141,3 +141,44 @@ class Evaluacion:
         self.tipo = tipo
         self.punteo = punteo
         self.curso = curso
+
+usuarios = []
+cursos = []
+
+while True:
+    print("\n--- MENÚ PRINCIPAL ---")
+    print("1. Registrar usuario (Estudiante o Instructor)")
+    print("2. Crear curso (solo instructor)")
+    print("3. Inscribir estudiante en curso")
+    print("4. Crear evaluación en un curso (solo instructor)")
+    print("5. Registrar calificación")
+    print("6. Consultar información (cursos, estudiantes, evaluaciones, calificaciones)")
+    print("7. Generar reportes simples (estudiantes con promedio bajo)")
+    print("8. Salir")
+
+    try:
+        opcion = int(input("Seleccione una opción: ").strip())
+    except ValueError:
+        print("Entrada inválida, debe ingresar un número entero")
+
+    match opcion:
+        case "1":
+            print("Hola")
+        case "2":
+            print("Hola")
+        case "3":
+            print("Hola")
+        case "4":
+            print("Hola")
+        case "5":
+            print("Hola")
+        case "6":
+            print("Hola")
+        case "7":
+            print("Hola")
+        case "8":
+            print("Saliendo del programa")
+            break
+
+        case _:
+            print("Opción no válida, intente de nuevo")
