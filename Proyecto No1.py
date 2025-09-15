@@ -200,12 +200,50 @@ while True:
                     instructores[seleccion].crear_curso()
                 else:
                     print("Opción inválida")
+
             case 3:
-                print("Hola")
+                if not cursos:
+                    print("No hay cursos creados")
+                    continue
+                contador = 1
+                for curso in cursos:
+                    print(f"{contador}. {curso.nombre}")
+                    contador += 1
+                seleccion = int(input("Seleccione un curso: ")) - 1
+                if 0 <= seleccion < len(cursos):
+                    cursos[seleccion].inscribir_estudiante()
+                else:
+                    print("Opción inválida")
+
             case 4:
-                print("Hola")
+                if not cursos:
+                    print("No hay cursos creados")
+                    continue
+                contador = 1
+                for curso in cursos:
+                    print(f"{contador}. {curso.nombre}")
+                    contador += 1
+                seleccion = int(input("Seleccione un curso: ")) - 1
+                if 0 <= seleccion < len(cursos):
+                    instructor = cursos[seleccion].instructor
+                    instructor.crear_evaluacion(cursos[seleccion])
+                else:
+                    print("Opción inválida")
+
             case 5:
-                print("Hola")
+                if not cursos:
+                    print("No hay cursos creados")
+                    continue
+                contador = 1
+                for curso in cursos:
+                    print(f"{contador}. {curso.nombre}")
+                    contador += 1
+                seleccion = int(input("Seleccione un curso: ")) - 1
+                if 0 <= seleccion < len(cursos):
+                    cursos[seleccion].registrar_calificacion()
+                else:
+                    print("Opción inválida")
+
             case 6:
                 print("Hola")
             case 7:
