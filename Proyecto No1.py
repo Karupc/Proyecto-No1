@@ -87,6 +87,52 @@ class Curso:
         except Exception as e:
             print(f"Error inesperado, vuelva a intentarlo: {e}")
 
+    def registrar_calificacion(self):
+        try:
+            if not self.estudiantes:
+                print("No hay estudiantes inscritos en este curso")
+                return
+            if not self.evaluaciones:
+                print("No hay evaluaciones creadas en este curso")
+                return
+
+            print("\nEstudiantes inscritos:")
+            numeroEst = 1
+            for alumno in self.estudiantes:
+                print(f"{numeroEst}. {alumno.nombre} (ID: {alumno.id})")
+                numeroEst += 1
+
+            seleccionEst = int(input("Seleccione un estudiante por número: ")) - 1
+            if seleccionEst < 0 or seleccionEst >= len(self.estudiantes):
+                print("Opción inválida")
+                return
+
+            alumno_elegido = self.estudiantes[seleccionEst]
+
+            print("\nEvaluaciones disponibles:")
+            numeroEva = 1
+            for evaluacion in self.evaluaciones:
+                print(f"{numeroEva}. {evaluacion.titulo} ({evaluacion.tipo}, punteo {evaluacion.punteo})")
+                numeroEva += 1
+
+            seleccionEva = int(input("Seleccione una evaluación por número: ")) - 1
+            if seleccionEva < 0 or seleccionEva >= len(self.evaluaciones):
+                print("Opción inválida")
+                return
+
+            evaluacion_elegida = self.evaluaciones[seleccionEva]
+
+            nota = float(input(f"Ingrese la nota obtenida en '{evaluacion_elegida.titulo}': "))
+            if nota < 0 or nota > evaluacion_elegida.punteo:
+                print(f"La nota debe estar entre 0 y {evaluacion_elegida.punteo}")
+                return
+
+            alumno_elegido.calificaciones[evaluacion_elegida.titulo] = nota
+            print(f"Nota registrada: {alumno_elegido.nombre} obtuvo {nota}/{evaluacion_elegida.punteo}")
+        except ValueError:
+            print("Entrada inválida, debe ingresar un número")
+        except Exception as e:
+            print(f"Error inesperado, vuelva a intentarlo: {e}")
 
 class Evaluacion:
     def __init__(self, titulo, tipo, punteo, curso):
