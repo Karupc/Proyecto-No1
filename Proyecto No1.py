@@ -1,8 +1,9 @@
 class Usuario:
-    def __init__(self, nombre, correo, id):
+    def __init__(self, nombre, correo, id, *args, **kwargs):
         self.nombre = nombre
         self._correo = correo
         self.id = id
+        self.extra = kwargs
 
     @property
     def correo(self):
@@ -12,13 +13,13 @@ class Usuario:
         self._correo = nuevo_correo
 
 class Estudiante (Usuario):
-    def __init__(self, nombre, correo, id):
-        super().__init__(nombre, correo, id)
+    def __init__(self, nombre, correo, id, *args, **kwargs):
+        super().__init__(nombre, correo, id, *args, **kwargs)
         self.calificaciones = {}
 
 class Instructor(Usuario):
-    def __init__(self, nombre, correo, id):
-        super().__init__(nombre, correo, id)
+    def __init__(self, nombre, correo, id, *args, **kwargs):
+        super().__init__(nombre, correo, id, *args, **kwargs)
         self.cursos_nuevos = []
 
     def crear_curso(self, nombre, cod):
