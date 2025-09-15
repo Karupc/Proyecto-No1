@@ -158,27 +158,27 @@ while True:
 
     try:
         opcion = int(input("Seleccione una opción: ").strip())
+
+        match opcion:
+            case 1:
+                print("Hola")
+            case 2:
+                print("Hola")
+            case 3:
+                print("Hola")
+            case 4:
+                print("Hola")
+            case 5:
+                print("Hola")
+            case 6:
+                print("Hola")
+            case 7:
+                print("Hola")
+            case 8:
+                print("Saliendo del programa")
+                break
+
+            case _:
+                print("Opción no válida, intente de nuevo")
     except ValueError:
         print("Entrada inválida, debe ingresar un número entero")
-
-    match opcion:
-        case "1":
-            print("Hola")
-        case "2":
-            print("Hola")
-        case "3":
-            print("Hola")
-        case "4":
-            print("Hola")
-        case "5":
-            print("Hola")
-        case "6":
-            print("Hola")
-        case "7":
-            print("Hola")
-        case "8":
-            print("Saliendo del programa")
-            break
-
-        case _:
-            print("Opción no válida, intente de nuevo")
