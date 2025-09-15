@@ -14,6 +14,7 @@ class Usuario:
 class Estudiante (Usuario):
     def __init__(self, nombre, correo, id):
         super().__init__(nombre, correo, id)
+        self.calificaciones = {}
 
 class Instructor(Usuario):
     def __init__(self, nombre, correo, id):
@@ -45,7 +46,7 @@ class Instructor(Usuario):
                     print("El tipo es inválido, debe ingresar examen o tarea")
             while True:
                 try:
-                    punteo = input("Ingrese la ponderación: ")
+                    punteo = int(input("Ingrese la ponderación: "))
                     if 0 <= punteo <= 100:
                         break
                     else:
@@ -75,11 +76,17 @@ class Curso:
             id = input("Ingresar el ID del o la estudiante").strip()
             if not nombre or not correo or not id:
                 print("Es necesario llenar toda la información")
+
+            for est in self.estudiantes:
+                if est.id == id:
+                    print("El estudiante ya está inscrito en este curso")
+
             estudiante = Estudiante(nombre, correo, id)
             print(f"{nombre} ha sido inscrit@ al curso {self.nombre}")
             return estudiante
         except Exception as e:
             print(f"Error inesperado, vuelva a intentarlo: {e}")
+
 
 class Evaluacion:
     def __init__(self, titulo, tipo, punteo, curso):
