@@ -8,15 +8,18 @@ class Usuario:
     @property
     def correo(self):
         return self._correo
+
     @correo.setter
     def correo(self, nuevo_correo):
         self._correo = nuevo_correo
 
-class Estudiante (Usuario):
+
+class Estudiante(Usuario):
     def __init__(self, nombre, correo, id, *args, **kwargs):
         super().__init__(nombre, correo, id, *args, **kwargs)
         self.calificaciones = {}
         self.tipo = "estudiante"
+
 
 class Instructor(Usuario):
     def __init__(self, nombre, correo, id, *args, **kwargs):
@@ -64,6 +67,7 @@ class Instructor(Usuario):
         except Exception as e:
             print(f"Error inesperado, vuelva a intentarlo: {e}")
 
+
 class Curso:
     def __init__(self, nombre, cod, instructor):
         self.nombre = nombre
@@ -71,20 +75,25 @@ class Curso:
         self.instructor = instructor
         self.estudiantes = []
         self.evaluaciones = []
+        self.calificaciones = {}
 
     def incribir_estudiante(self):
         try:
             nombre = input("Ingresar el nombre del o la estudiante: ").strip()
             correo = input("Ingresar el correo del o la estudiante: ").strip()
-            id = input("Ingresar el ID del o la estudiante").strip()
-            if not nombre or not correo or not id:
+            id_estudiante = input("Ingresar el ID del o la estudiante").strip()
+            if not nombre or not correo or not id_estudiante:
                 print("Es necesario llenar toda la información")
+                return None
 
             for est in self.estudiantes:
-                if est.id == id:
+                if est.id == id_estudiante:
                     print("El estudiante ya está inscrito en este curso")
+                    return None
 
-            estudiante = Estudiante(nombre, correo, id)
+            estudiante = Estudiante(nombre, correo, id_estudiante)
+            self.estudiantes.append(estudiante)
+            self.calificaciones[estudiante.id] = {}
             print(f"{nombre} ha sido inscrit@ al curso {self.nombre}")
             return estudiante
         except Exception as e:
@@ -130,12 +139,31 @@ class Curso:
                 print(f"La nota debe estar entre 0 y {evaluacion_elegida.punteo}")
                 return
 
-            alumno_elegido.calificaciones[evaluacion_elegida.titulo] = nota
+            if alumno_elegido.id not in self.calificaciones:
+                self.calificaciones[alumno_elegido.id] = {}
+            self.calificaciones[alumno_elegido.id][evaluacion_elegida.titulo] = nota
             print(f"Nota registrada: {alumno_elegido.nombre} obtuvo {nota}/{evaluacion_elegida.punteo}")
         except ValueError:
             print("Entrada inválida, debe ingresar un número")
         except Exception as e:
             print(f"Error inesperado, vuelva a intentarlo: {e}")
+
+    def consultar_estudiantes_y_calificaciones(self):
+        print(f"\n--- Estudiantes y Calificaciones del Curso: {self.nombre} ---")
+        if not self.estudiantes:
+            print("No hay estudiantes inscritos en este curso.")
+            return
+
+        for estudiante in self.estudiantes:
+            print(f"  > Estudiante: {estudiante.nombre} (ID: {estudiante.id})")
+
+            if estudiante.id in self.calificaciones and self.calificaciones[estudiante.id]:
+                print("    - Calificaciones:")
+                for evaluacion, nota in self.calificaciones[estudiante.id].items():
+                    print(f"      -> {evaluacion}: {nota}")
+            else:
+                print("    - Aún no se han registrado calificaciones.")
+
 
 class Evaluacion:
     def __init__(self, titulo, tipo, punteo, curso):
@@ -144,8 +172,46 @@ class Evaluacion:
         self.punteo = punteo
         self.curso = curso
 
+
+class Plataforma:
+    def __init__(self):
+        self.cursos = []
+
+    def agregar_curso(self, curso):
+        self.cursos.append(curso)
+
+    def generar_reporte_promedios_bajos(self, umbral=70):
+        print(f"\n--- Reporte de Estudiantes con Promedio Bajo (Menor a {umbral}) ---")
+        estudiantes_con_promedio_bajo = False
+
+        if not self.cursos:
+            print("No hay cursos registrados en la plataforma.")
+            return
+
+        for curso in self.cursos:
+            print(f"\nCurso: {curso.nombre}")
+
+            if not curso.estudiantes:
+                print("  - No hay estudiantes en este curso.")
+                continue
+
+            for estudiante in curso.estudiantes:
+                calificaciones = curso.calificaciones.get(estudiante.id, {})
+
+                if calificaciones:
+                    promedio = sum(calificaciones.values()) / len(calificaciones)
+                    if promedio < umbral:
+                        print(
+                            f"  -> Alerta: {estudiante.nombre} (ID: {estudiante.id}) tiene un promedio de {promedio:.2f}.")
+                        estudiantes_con_promedio_bajo = True
+
+        if not estudiantes_con_promedio_bajo:
+            print("\n¡Excelente! No se encontraron estudiantes con promedio bajo en la plataforma.")
+
+
 usuarios = []
 cursos = []
+plataforma = Plataforma()
 
 while True:
     print("\n--- MENÚ PRINCIPAL ---")
@@ -166,13 +232,13 @@ while True:
                 tipo = input("¿Registrar Estudiante (E) o Instructor (I)? ").strip().lower()
                 nombre = input("Nombre: ").strip()
                 correo = input("Correo: ").strip()
-                id = input("ID: ").strip()
+                id_usuario = input("ID: ").strip()
 
                 if tipo == "e":
-                    usuarios.append(Estudiante(nombre, correo, id))
+                    usuarios.append(Estudiante(nombre, correo, id_usuario))
                     print(f"Estudiante '{nombre}' registrado")
                 elif tipo == "i":
-                    usuarios.append(Instructor(nombre, correo, id))
+                    usuarios.append(Instructor(nombre, correo, id_usuario))
                     print(f"Instructor '{nombre}' registrado")
                 else:
                     print("Tipo inválido")
@@ -183,21 +249,21 @@ while True:
                     continue
 
                 print("\nInstructores registrados:")
-                instructores = []
-                contador = 1
-                for usuario in usuarios:
-                    if usuario.tipo == "instructor":
-                        print(f"{contador}. {usuario.nombre}")
-                        instructores.append(usuario)
-                        contador += 1
+                instructores = [u for u in usuarios if u.tipo == "instructor"]
 
                 if not instructores:
                     print("No hay instructores para crear cursos")
                     continue
 
+                for i, instructor in enumerate(instructores, 1):
+                    print(f"{i}. {instructor.nombre}")
+
                 seleccion = int(input("Seleccione un instructor por número: ")) - 1
                 if 0 <= seleccion < len(instructores):
-                    instructores[seleccion].crear_curso()
+                    nuevo_curso = instructores[seleccion].crear_curso(None, None)
+                    if nuevo_curso:
+                        cursos.append(nuevo_curso)
+                        plataforma.agregar_curso(nuevo_curso)
                 else:
                     print("Opción inválida")
 
@@ -205,13 +271,13 @@ while True:
                 if not cursos:
                     print("No hay cursos creados")
                     continue
-                contador = 1
-                for curso in cursos:
-                    print(f"{contador}. {curso.nombre}")
-                    contador += 1
+
+                for i, curso in enumerate(cursos, 1):
+                    print(f"{i}. {curso.nombre}")
+
                 seleccion = int(input("Seleccione un curso: ")) - 1
                 if 0 <= seleccion < len(cursos):
-                    cursos[seleccion].inscribir_estudiante()
+                    cursos[seleccion].incribir_estudiante()
                 else:
                     print("Opción inválida")
 
@@ -219,14 +285,17 @@ while True:
                 if not cursos:
                     print("No hay cursos creados")
                     continue
-                contador = 1
-                for curso in cursos:
-                    print(f"{contador}. {curso.nombre}")
-                    contador += 1
+
+                for i, curso in enumerate(cursos, 1):
+                    print(f"{i}. {curso.nombre}")
+
                 seleccion = int(input("Seleccione un curso: ")) - 1
                 if 0 <= seleccion < len(cursos):
-                    instructor = cursos[seleccion].instructor
-                    instructor.crear_evaluacion(cursos[seleccion])
+                    instructor_curso = cursos[seleccion].instructor
+                    if instructor_curso.tipo == "instructor":
+                        instructor_curso.crear_evaluacion(cursos[seleccion], None, None, None)
+                    else:
+                        print("Error: El usuario no es un instructor.")
                 else:
                     print("Opción inválida")
 
@@ -234,10 +303,10 @@ while True:
                 if not cursos:
                     print("No hay cursos creados")
                     continue
-                contador = 1
-                for curso in cursos:
-                    print(f"{contador}. {curso.nombre}")
-                    contador += 1
+
+                for i, curso in enumerate(cursos, 1):
+                    print(f"{i}. {curso.nombre}")
+
                 seleccion = int(input("Seleccione un curso: ")) - 1
                 if 0 <= seleccion < len(cursos):
                     cursos[seleccion].registrar_calificacion()
@@ -245,14 +314,27 @@ while True:
                     print("Opción inválida")
 
             case 6:
-                print("Hola")
+                if not cursos:
+                    print("No hay cursos creados para consultar.")
+                    continue
+
+                for i, curso in enumerate(cursos, 1):
+                    print(f"{i}. {curso.nombre}")
+
+                seleccion = int(input("Seleccione el curso a consultar: ")) - 1
+                if 0 <= seleccion < len(cursos):
+                    cursos[seleccion].consultar_estudiantes_y_calificaciones()
+                else:
+                    print("Opción inválida.")
+
             case 7:
-                print("Hola")
+                plataforma.generar_reporte_promedios_bajos()
+
             case 8:
-                print("Saliendo del programa")
+                print("Saliendo del programa.")
                 break
 
             case _:
-                print("Opción no válida, intente de nuevo")
+                print("Opción no válida, intente de nuevo.")
     except ValueError:
-        print("Entrada inválida, debe ingresar un número entero")
+        print("Entrada inválida, debe ingresar un número entero.")
