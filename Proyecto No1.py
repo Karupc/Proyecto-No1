@@ -252,91 +252,134 @@ def menu_estudiante(estudiante):
         except ValueError:
             print("Entrada no válida, intente de nuevo")
 
-    def menu_instructor(instructor):
-        while True:
-            print(f"¡Hola Instructor! {instructor.nombre}, este es tu menú\n"
-                  "-----MENÚ DE INSTRUCTOR-----\n"
-                  "1.- Crear curso\n"
-                  "2.- Crear evaluación en un curso\n"
-                  "3.- Inscribir a un estudiante en un curso\n"
-                  "4.- Registrar calificación\n"
-                  "5.- Consultar estudiantes y calificaciones\n"
-                  "6.- Generar reporte de promedios bajos\n"
-                  "7.. Salir al menú principal")
-            try:
-                opcion = input("Seleccione una opción: ")
+def menu_instructor(instructor):
+    while True:
+        print(f"¡Hola Instructor! {instructor.nombre}, este es tu menú\n"
+                "-----MENÚ DE INSTRUCTOR-----\n"
+                "1.- Crear curso\n"
+                "2.- Crear evaluación en un curso\n"
+                "3.- Inscribir a un estudiante en un curso\n"
+                "4.- Registrar calificación\n"
+                "5.- Consultar estudiantes y calificaciones\n"
+                "6.- Generar reporte de promedios bajos\n"
+                "7.. Salir al menú principal")
+        try:
+            opcion = input("Seleccione una opción: ")
 
-                match opcion:
-                    case "1":
-                        nuevo_curso = instructor.crear_curso(None, None)
-                        if nuevo_curso:
-                            cursos.append(nuevo_curso)
-                            plataforma.agregar_curso(nuevo_curso)
-
-                    case "2":
-                        if not cursos:
-                            print("No hay cursos creados")
-                            continue
-                        for i, curso in enumerate(cursos, 1):
-                            print(f"{i}. {curso.nombre}")
-                        seleccion = int(input("Seleccione un curso: ")) - 1
-                        if 0 <= seleccion < len(cursos):
-                            if cursos[seleccion].instructor == instructor:
-                                instructor.crear_evaluacion(cursos[seleccion], None, None, None)
-                            else:
-                                print("Solo puedes crear evaluaciones en tus cursos.")
+            match opcion:
+                case "1":
+                    nuevo_curso = instructor.crear_curso(None, None)
+                    if nuevo_curso:
+                        cursos.append(nuevo_curso)
+                        plataforma.agregar_curso(nuevo_curso)
+                case "2":
+                    if not cursos:
+                        print("No hay cursos creados")
+                        continue
+                    for i, curso in enumerate(cursos, 1):
+                        print(f"{i}. {curso.nombre}")
+                    seleccion = int(input("Seleccione un curso: ")) - 1
+                    if 0 <= seleccion < len(cursos):
+                        if cursos[seleccion].instructor == instructor:
+                            instructor.crear_evaluacion(cursos[seleccion], None, None, None)
                         else:
-                            print("Opción inválida")
-
-                    case "3":
-                        if not cursos:
-                            print("No hay cursos creados")
-                            continue
-                        for i, curso in enumerate(cursos, 1):
-                            print(f"{i}. {curso.nombre}")
-                        seleccion = int(input("Seleccione un curso: ")) - 1
-                        if 0 <= seleccion < len(cursos):
-                            if cursos[seleccion].instructor == instructor:
-                                cursos[seleccion].incribir_estudiante()
-                            else:
-                                print("Solo puedes inscribir en tus cursos.")
-                        else:
-                            print("Opción inválida")
-
-                    case "4":
-                        if not cursos:
-                            print("No hay cursos creados")
-                            continue
-                        for i, curso in enumerate(cursos, 1):
-                            print(f"{i}. {curso.nombre}")
-                        seleccion = int(input("Seleccione un curso: ")) - 1
-                        if 0 <= seleccion < len(cursos):
-                            if cursos[seleccion].instructor == instructor:
-                                cursos[seleccion].registrar_calificacion()
-                            else:
-                                print("Solo puedes registrar calificaciones en tus cursos.")
-                        else:
-                            print("Opción inválida")
-
-                    case "5":
-                        if not cursos:
-                            print("No hay cursos creados para consultar.")
-                            continue
-                        for i, curso in enumerate(cursos, 1):
-                            print(f"{i}. {curso.nombre}")
-                        seleccion = int(input("Seleccione un curso: ")) - 1
-                        if 0 <= seleccion < len(cursos):
-                            cursos[seleccion].consultar_estudiantes_y_calificaciones()
-                        else:
-                            print("Opción inválida")
-
-                    case "6":
-                        plataforma.generar_reporte_promedios_bajos()
-
-                    case "7":
-                        break
-
-                    case _:
+                            print("Solo puedes crear evaluaciones en tus cursos.")
+                    else:
                         print("Opción inválida, vuelva a intentarlo")
-            except ValueError:
-                print("Entrada no válida, intente de nuevo")
+                case "3":
+                    if not cursos:
+                        print("No hay cursos creados")
+                        continue
+                    for i, curso in enumerate(cursos, 1):
+                        print(f"{i}. {curso.nombre}")
+                    seleccion = int(input("Seleccione un curso: ")) - 1
+                    if 0 <= seleccion < len(cursos):
+                        if cursos[seleccion].instructor == instructor:
+                            cursos[seleccion].incribir_estudiante()
+                        else:
+                            print("Solo puedes inscribir en tus cursos.")
+                    else:
+                        print("Opción inválida, vuelva a intentarlo")
+                case "4":
+                    if not cursos:
+                        print("No hay cursos creados")
+                        continue
+                    for i, curso in enumerate(cursos, 1):
+                        print(f"{i}. {curso.nombre}")
+                    seleccion = int(input("Seleccione un curso: ")) - 1
+                    if 0 <= seleccion < len(cursos):
+                        if cursos[seleccion].instructor == instructor:
+                            cursos[seleccion].registrar_calificacion()
+                        else:
+                            print("Solo puedes registrar calificaciones en tus cursos.")
+                    else:
+                        print("Opción inválida, vuelva a intentarlo")
+                case "5":
+                    if not cursos:
+                        print("No hay cursos creados para consultar.")
+                        continue
+                    for i, curso in enumerate(cursos, 1):
+                        print(f"{i}. {curso.nombre}")
+                    seleccion = int(input("Seleccione un curso: ")) - 1
+                    if 0 <= seleccion < len(cursos):
+                        cursos[seleccion].consultar_estudiantes_y_calificaciones()
+                    else:
+                        print("Opción inválida, vuelva a intentarlo")
+                case "6":
+                    plataforma.generar_reporte_promedios_bajos()
+                case "7":
+                    break
+
+                case _:
+                    print("Opción inválida, vuelva a intentarlo")
+        except ValueError:
+            print("Entrada no válida, intente de nuevo")
+
+while True:
+    print("-----MENÚ PRINCIPAL-----\n"
+          "1.- Registrar un usuario (Estudiante o Instructor\n"
+          "2.- Ingresar como usuario\n"
+          "3.- Salir")
+    try:
+        opcion = input("Seleccione una opción: ")
+
+        match opcion:
+            case "1":
+                tipo = input("¿Registrar Estudiante (E) o Instructor (I)? ").strip().lower()
+                nombre = input("Nombre: ").strip()
+                correo = input("Correo: ").strip()
+                id_usuario = input("ID: ").strip()
+
+                if tipo == "e":
+                    usuarios.append(Estudiante(nombre, correo, id_usuario))
+                    print(f"Estudiante '{nombre}' registrado")
+                elif tipo == "i":
+                    usuarios.append(Instructor(nombre, correo, id_usuario))
+                    print(f"Instructor '{nombre}' registrado")
+                else:
+                    print("Tipo inválido")
+
+            case "2":
+                if not usuarios:
+                    print("No hay usuarios registrados")
+                    continue
+                for i, user in enumerate(usuarios, 1):
+                    print(f"{i}. {user.nombre} ({user.tipo})")
+                seleccion = int(input("Seleccione un usuario: ")) - 1
+                if 0 <= seleccion < len(usuarios):
+                    usuario = usuarios[seleccion]
+                    if usuario.tipo == "estudiante":
+                        menu_estudiante(usuario)
+                    elif usuario.tipo == "instructor":
+                        menu_instructor(usuario)
+                else:
+                    print("Opción inválida")
+
+            case "3":
+                print("Saliendo del programa.")
+                break
+
+            case _:
+                print("Opción no válida, intente de nuevo.")
+    except ValueError:
+        print("Entrada inválida, debe ingresar un número entero.")
