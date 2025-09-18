@@ -221,10 +221,10 @@ def menu_estudiante(estudiante):
             "2.- Ver tus calificaciones\n"
             "3.- Salir a menú principal")
         try:
-            opcion = int(input("Seleccione una opción: "))
+            opcion = input("Seleccione una opción: ")
 
             match opcion:
-                case 1:
+                case "1":
                     cursos_inscrito = [c for c in cursos if estudiante in c.estudiantes]
                     if not cursos_inscrito:
                         print("No estás inscrito en ningún curso")
@@ -232,7 +232,7 @@ def menu_estudiante(estudiante):
                         print("\nCursos en los que estás inscrito:")
                         for curso in cursos_inscrito:
                             print(f"- {curso.nombre}")
-                case 2:
+                case "2":
                     cursos_inscrito = [c for c in cursos if estudiante in c.estudiantes]
                     if not cursos_inscrito:
                         print("No estás inscrito en ningún curso.")
@@ -245,9 +245,98 @@ def menu_estudiante(estudiante):
                                     print(f"  {evaluacion}: {nota}")
                             else:
                                 print("  Sin calificaciones registradas.")
-                case 3:
+                case "3":
                     break
                 case _:
-                    print("Opción inválida")
+                    print("Opción inválida, vuelva a intentarlo")
         except ValueError:
-            print("Entrada inválida")
+            print("Entrada no válida, intente de nuevo")
+
+    def menu_instructor(instructor):
+        while True:
+            print(f"¡Hola Instructor! {instructor.nombre}, este es tu menú\n"
+                  "-----MENÚ DE INSTRUCTOR-----\n"
+                  "1.- Crear curso\n"
+                  "2.- Crear evaluación en un curso\n"
+                  "3.- Inscribir a un estudiante en un curso\n"
+                  "4.- Registrar calificación\n"
+                  "5.- Consultar estudiantes y calificaciones\n"
+                  "6.- Generar reporte de promedios bajos\n"
+                  "7.. Salir al menú principal")
+            try:
+                opcion = input("Seleccione una opción: ")
+
+                match opcion:
+                    case "1":
+                        nuevo_curso = instructor.crear_curso(None, None)
+                        if nuevo_curso:
+                            cursos.append(nuevo_curso)
+                            plataforma.agregar_curso(nuevo_curso)
+
+                    case "2":
+                        if not cursos:
+                            print("No hay cursos creados")
+                            continue
+                        for i, curso in enumerate(cursos, 1):
+                            print(f"{i}. {curso.nombre}")
+                        seleccion = int(input("Seleccione un curso: ")) - 1
+                        if 0 <= seleccion < len(cursos):
+                            if cursos[seleccion].instructor == instructor:
+                                instructor.crear_evaluacion(cursos[seleccion], None, None, None)
+                            else:
+                                print("Solo puedes crear evaluaciones en tus cursos.")
+                        else:
+                            print("Opción inválida")
+
+                    case "3":
+                        if not cursos:
+                            print("No hay cursos creados")
+                            continue
+                        for i, curso in enumerate(cursos, 1):
+                            print(f"{i}. {curso.nombre}")
+                        seleccion = int(input("Seleccione un curso: ")) - 1
+                        if 0 <= seleccion < len(cursos):
+                            if cursos[seleccion].instructor == instructor:
+                                cursos[seleccion].incribir_estudiante()
+                            else:
+                                print("Solo puedes inscribir en tus cursos.")
+                        else:
+                            print("Opción inválida")
+
+                    case "4":
+                        if not cursos:
+                            print("No hay cursos creados")
+                            continue
+                        for i, curso in enumerate(cursos, 1):
+                            print(f"{i}. {curso.nombre}")
+                        seleccion = int(input("Seleccione un curso: ")) - 1
+                        if 0 <= seleccion < len(cursos):
+                            if cursos[seleccion].instructor == instructor:
+                                cursos[seleccion].registrar_calificacion()
+                            else:
+                                print("Solo puedes registrar calificaciones en tus cursos.")
+                        else:
+                            print("Opción inválida")
+
+                    case "5":
+                        if not cursos:
+                            print("No hay cursos creados para consultar.")
+                            continue
+                        for i, curso in enumerate(cursos, 1):
+                            print(f"{i}. {curso.nombre}")
+                        seleccion = int(input("Seleccione un curso: ")) - 1
+                        if 0 <= seleccion < len(cursos):
+                            cursos[seleccion].consultar_estudiantes_y_calificaciones()
+                        else:
+                            print("Opción inválida")
+
+                    case "6":
+                        plataforma.generar_reporte_promedios_bajos()
+
+                    case "7":
+                        break
+
+                    case _:
+                        print("Opción inválida, vuelva a intentarlo")
+            except ValueError:
+                print("Entrada no válida, intente de nuevo")
