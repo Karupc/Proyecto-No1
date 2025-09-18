@@ -1,3 +1,4 @@
+import os
 class Usuario:
     def __init__(self, nombre, correo, id, *args, **kwargs):
         self.nombre = nombre
@@ -208,10 +209,84 @@ class Plataforma:
         if not estudiantes_con_promedio_bajo:
             print("\n¡Excelente! No se encontraron estudiantes con promedio bajo en la plataforma.")
 
+def guardar_datos():
+    with open("usuarios.txt", "w") as f:
+        for u in usuarios:
+            f.write(f"{u.tipo};{u.nombre};{u.correo};{u.id}\n")
+    with open("cursos.txt", "w") as f:
+        for c in cursos:
+            f.write(f"{c.nombre};{c.cod};{c.instructor.id}\n")
+
+    with open("inscripciones.txt", "w") as f:
+        for c in cursos:
+            for est in c.estudiantes:
+                f.write(f"{est.id};{c.cod}\n")
+
+    with open("evaluaciones.txt", "w") as f:
+        for c in cursos:
+            for e in c.evaluaciones:
+                f.write(f"{e.titulo};{e.tipo};{e.punteo};{c.cod}\n")
+
+    with open("calificaciones.txt", "w") as f:
+        for c in cursos:
+            for est_id, notas in c.calificaciones.items():
+                for eval_titulo, nota in notas.items():
+                    f.write(f"{est_id};{eval_titulo};{nota};{c.cod}\n")
+
+def cargar_datos():
+    if os.path.exists("usuarios.txt"):
+        with open("usuarios.txt", "r") as f:
+            for linea in f:
+                tipo, nombre, correo, id_usuario = linea.strip().split(";")
+                if tipo == "estudiante":
+                    usuarios.append(Estudiante(nombre, correo, id_usuario))
+                else:
+                    usuarios.append(Instructor(nombre, correo, id_usuario))
+
+    usuarios_dict = {u.id: u for u in usuarios}
+
+    if os.path.exists("cursos.txt"):
+        with open("cursos.txt", "r") as f:
+            for linea in f:
+                nombre, cod, instructor_id = linea.strip().split(";")
+                instructor = usuarios_dict.get(instructor_id)
+                if instructor:
+                    curso = Curso(nombre, cod, instructor)
+                    cursos.append(curso)
+                    plataforma.agregar_curso(curso)
+
+    if os.path.exists("inscripciones.txt"):
+        with open("inscripciones.txt", "r") as f:
+            for linea in f:
+                est_id, curso_cod = linea.strip().split(";")
+                estudiante = usuarios_dict.get(est_id)
+                curso = next((c for c in cursos if c.cod == curso_cod), None)
+                if estudiante and curso:
+                    curso.estudiantes.append(estudiante)
+                    curso.calificaciones[est_id] = {}
+
+    if os.path.exists("evaluaciones.txt"):
+        with open("evaluaciones.txt", "r") as f:
+            for linea in f:
+                titulo, tipo, punteo, curso_cod = linea.strip().split(";")
+                curso = next((c for c in cursos if c.cod == curso_cod), None)
+                if curso:
+                    curso.evaluaciones.append(Evaluacion(titulo, tipo, int(punteo), curso))
+
+    if os.path.exists("calificaciones.txt"):
+        with open("calificaciones.txt", "r") as f:
+            for linea in f:
+                est_id, eval_titulo, nota, curso_cod = linea.strip().split(";")
+                curso = next((c for c in cursos if c.cod == curso_cod), None)
+                if curso:
+                    if est_id not in curso.calificaciones:
+                        curso.calificaciones[est_id] = {}
+                    curso.calificaciones[est_id][eval_titulo] = float(nota)
 
 usuarios = []
 cursos = []
 plataforma = Plataforma()
+cargar_datos()
 
 def menu_estudiante(estudiante):
     while True:
@@ -272,16 +347,18 @@ def menu_instructor(instructor):
                     if nuevo_curso:
                         cursos.append(nuevo_curso)
                         plataforma.agregar_curso(nuevo_curso)
+                        guardar_datos()
                 case "2":
                     if not cursos:
                         print("No hay cursos creados")
                         continue
                     for i, curso in enumerate(cursos, 1):
-                        print(f"{i}. {curso.nombre}")
+                        print(f"{i}.{curso.nombre}")
                     seleccion = int(input("Seleccione un curso: ")) - 1
                     if 0 <= seleccion < len(cursos):
                         if cursos[seleccion].instructor == instructor:
                             instructor.crear_evaluacion(cursos[seleccion], None, None, None)
+                            guardar_datos()
                         else:
                             print("Solo puedes crear evaluaciones en tus cursos.")
                     else:
@@ -291,11 +368,12 @@ def menu_instructor(instructor):
                         print("No hay cursos creados")
                         continue
                     for i, curso in enumerate(cursos, 1):
-                        print(f"{i}. {curso.nombre}")
+                        print(f"{i}.{curso.nombre}")
                     seleccion = int(input("Seleccione un curso: ")) - 1
                     if 0 <= seleccion < len(cursos):
                         if cursos[seleccion].instructor == instructor:
                             cursos[seleccion].incribir_estudiante()
+                            guardar_datos()
                         else:
                             print("Solo puedes inscribir en tus cursos.")
                     else:
@@ -305,21 +383,22 @@ def menu_instructor(instructor):
                         print("No hay cursos creados")
                         continue
                     for i, curso in enumerate(cursos, 1):
-                        print(f"{i}. {curso.nombre}")
+                        print(f"{i}.{curso.nombre}")
                     seleccion = int(input("Seleccione un curso: ")) - 1
                     if 0 <= seleccion < len(cursos):
                         if cursos[seleccion].instructor == instructor:
                             cursos[seleccion].registrar_calificacion()
+                            guardar_datos()
                         else:
                             print("Solo puedes registrar calificaciones en tus cursos.")
                     else:
                         print("Opción inválida, vuelva a intentarlo")
                 case "5":
                     if not cursos:
-                        print("No hay cursos creados para consultar.")
+                        print("No hay cursos creados para consultar")
                         continue
                     for i, curso in enumerate(cursos, 1):
-                        print(f"{i}. {curso.nombre}")
+                        print(f"{i}.{curso.nombre}")
                     seleccion = int(input("Seleccione un curso: ")) - 1
                     if 0 <= seleccion < len(cursos):
                         cursos[seleccion].consultar_estudiantes_y_calificaciones()
@@ -353,9 +432,11 @@ while True:
                 if tipo == "e":
                     usuarios.append(Estudiante(nombre, correo, id_usuario))
                     print(f"Estudiante '{nombre}' registrado")
+                    guardar_datos()
                 elif tipo == "i":
                     usuarios.append(Instructor(nombre, correo, id_usuario))
                     print(f"Instructor '{nombre}' registrado")
+                    guardar_datos()
                 else:
                     print("Tipo inválido")
 
@@ -365,7 +446,7 @@ while True:
                     continue
                 for i, user in enumerate(usuarios, 1):
                     print(f"{i}. {user.nombre} ({user.tipo})")
-                seleccion = int(input("Seleccione un usuario: ")) - 1
+                seleccion = int(input("Seleccione el número del usuario que desea seleccionar: ")) - 1
                 if 0 <= seleccion < len(usuarios):
                     usuario = usuarios[seleccion]
                     if usuario.tipo == "estudiante":
@@ -373,13 +454,13 @@ while True:
                     elif usuario.tipo == "instructor":
                         menu_instructor(usuario)
                 else:
-                    print("Opción inválida")
+                    print("Opción inválida, vuelva a intentarlo")
 
             case "3":
-                print("Saliendo del programa.")
+                print("Saliendo del programa")
                 break
 
             case _:
-                print("Opción no válida, intente de nuevo.")
+                print("Opción no válida, intente de nuevo")
     except ValueError:
-        print("Entrada inválida, debe ingresar un número entero.")
+        print("Entrada inválida, vuelva a intentarlo")
